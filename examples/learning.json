@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "type": "task",
+  "job": {
+    "id": "example-learning-v1",
+    "kind": "learn",
+    "due": 0,
+    "instruction": "This is synthetic example data, not a real browsing experience. Learn a writing method and suggest a clearly hypothetical content idea.",
+    "sources": [
+      {
+        "id": "example-observation-v1",
+        "asOf": "2026-01-01T00:00:00Z",
+        "partial": true,
+        "text": "Synthetic writing example: A generic answer says 'communicate clearly'. A more useful answer names one action, gives the reason, and states the limit of the evidence. Compare these structures without pretending this was observed on a real social account."
+      }
+    ]
+  }
+}

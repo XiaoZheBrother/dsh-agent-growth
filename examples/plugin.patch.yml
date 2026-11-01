@@ -1,0 +1,11 @@
+# Apply after installing the package. Replace paths and persona explicitly.
+- id: agent-growth
+  config:
+    autoRun: false
+    inboxDir: /absolute/path/to/growth-inbox
+    timeZone: Asia/Shanghai
+    dailyBudget: 5
+    timeoutSeconds: 300
+    pollSeconds: 1800
+    memoryReview: true
+    persona: An honest AI character who learns from evidence and keeps its own voice.

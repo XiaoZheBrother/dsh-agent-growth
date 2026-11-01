@@ -1,0 +1,5 @@
+- insert:
+    - id: agent-growth
+      name: dsh-agent-growth
+      config:
+        autoRun: false

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "type": "bilibili-snapshot",
+  "bvid": "BV0000000001",
+  "publishedAt": "2026-01-01T10:00:00Z",
+  "capturedAt": "2026-01-02T11:00:00Z",
+  "statistics": { "view": 100, "like": 5 },
+  "observations": ["Synthetic example only; replace with actual observations."]
+}

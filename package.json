@@ -1,0 +1,55 @@
+{
+  "name": "dsh-agent-growth",
+  "version": "0.1.0",
+  "description": "Evidence-backed learning, reflection and versioned memory for DeepSeek Harness",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./core": "./core.js",
+    "./adapters": "./adapters.js"
+  },
+  "bin": {
+    "dsh-growth": "./cli.js"
+  },
+  "files": [
+    "index.js",
+    "core.js",
+    "adapters.js",
+    "cli.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "examples",
+    "README.en.md"
+  ],
+  "engines": {
+    "node": ">=22.19.0",
+    "dsh": "0.2.1-rc.5"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-agent": "0.2.1-rc.5",
+    "@deepseek-ai/dsh-llm": "0.2.1-rc.5",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.5",
+    "@deepseek-ai/dsh-home-paths": "0.2.1-rc.5",
+    "@deepseek-ai/schemastery": "^3.18.4"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node --check index.js && node --check core.js && node --check adapters.js"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/XiaoZheBrother/dsh-agent-growth.git"
+  },
+  "homepage": "https://github.com/XiaoZheBrother/dsh-agent-growth#readme",
+  "bugs": {
+    "url": "https://github.com/XiaoZheBrother/dsh-agent-growth/issues"
+  }
+}

@@ -1,0 +1,8 @@
+node_modules/
+*.tgz
+.dsh-home/
+local/
+*.sqlite3*
+.env*
+!.env.example
+*.log
