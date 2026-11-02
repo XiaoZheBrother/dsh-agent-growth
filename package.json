@@ -16,6 +16,7 @@
     "index.js",
     "core.js",
     "adapters.js",
+    "exploration.js",
     "cli.js",
     "cordis.patch.yml",
     "README.md",
@@ -41,7 +42,7 @@
   },
   "scripts": {
     "test": "node --test test/*.test.js",
-    "check": "node --check index.js && node --check core.js && node --check adapters.js"
+    "check": "node --check index.js && node --check core.js && node --check adapters.js && node --check exploration.js"
   },
   "license": "MIT",
   "repository": {

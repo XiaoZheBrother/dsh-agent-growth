@@ -2,6 +2,7 @@ import { DatabaseSync } from 'node:sqlite'
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
+import { validateExploration } from './exploration.js'
 
 export const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex')
 const text = (v, max, label) => {
@@ -37,7 +38,7 @@ export class GrowthStore {
   }
   enqueue({id,kind,due,sources,instruction=''}) {
     text(id,200,'job id')
-    if(!['learn','review','memory'].includes(kind)) throw new Error('Unknown job kind')
+    if(!['learn','review','memory','explore'].includes(kind)) throw new Error('Unknown job kind')
     if(!Number.isFinite(due)) throw new Error('Invalid due time')
     if(!Array.isArray(sources) || sources.length<1 || sources.length>24) throw new Error('Sources required (1..24)')
     if(typeof instruction!=='string' || instruction.length>4000) throw new Error('Invalid instruction')
@@ -72,9 +73,11 @@ export class GrowthStore {
       const time=this.clock()
       this.db.prepare("UPDATE jobs SET state='failed',error='Lease expired; no automatic retry' WHERE state IN ('running','saved') AND deadline<=?").run(time)
       if(this.db.prepare("SELECT id FROM jobs WHERE state IN ('running','saved')").get()) return null
-      const used=this.db.prepare('SELECT COUNT(*) n FROM attempts WHERE day=?').get(dayKey(time,this.timeZone)).n
+      const day=dayKey(time,this.timeZone)
+      const used=this.db.prepare('SELECT COUNT(*) n FROM attempts WHERE day=?').get(day).n
       if(used>=this.dailyBudget) return null
-      const row=this.db.prepare("SELECT * FROM jobs WHERE state='pending' AND due<=? ORDER BY due,id LIMIT 1").get(time)
+      const explored=this.db.prepare("SELECT COUNT(*) n FROM attempts a JOIN jobs j ON j.id=a.job WHERE a.day=? AND j.kind='explore'").get(day).n
+      const row=this.db.prepare("SELECT * FROM jobs WHERE state='pending' AND due<=? AND (kind!='explore' OR ?<3) ORDER BY due,id LIMIT 1").get(time,explored)
       if(!row) return null
       const token=randomUUID()
       this.db.prepare("UPDATE jobs SET state='running',owner=?,token=?,deadline=? WHERE id=?").run(owner,token,time+this.timeoutMs,row.id)
@@ -101,13 +104,15 @@ export class GrowthStore {
     return {...source,text:source.text.slice(page*1800,(page+1)*1800),page,pages,hash:stored.hash,
       warning:source.partial?'Source is an excerpt; never claim full viewing.':'Read all pages before claiming full source coverage.'}
   }
-  save(lease,{title,body,citations,supersedes=[]}) {
+  save(lease,{title,body,citations,supersedes=[],exploration}) {
     text(title,160,'title');text(body,16000,'body')
     if(!Array.isArray(citations) || !citations.length || citations.length>24) throw new Error('Citations required')
     if(!Array.isArray(supersedes) || supersedes.length>20) throw new Error('Invalid revision links')
     return this.tx(()=>{
       const row=this.owned(lease)
       if(row.state!=='running') throw new Error('Result already saved')
+      const curiosity=row.kind==='explore'?validateExploration(exploration):null
+      if(row.kind!=='explore' && exploration!=null) throw new Error('Exploration belongs to explore jobs only')
       const permitted=JSON.parse(row.input).sourceIds
       const evidence=citations.map(id=>{
         if(typeof id!=='string' || !permitted.includes(id)) throw new Error('Unknown citation')
@@ -125,6 +130,7 @@ export class GrowthStore {
       }
       const result={title,body,citations:evidence,supersedes,job:row.id,kind:row.kind,at:new Date(this.clock()).toISOString(),
         authorSession:row.owner,inputHash:row.hash,trust:'Model-authored observation, not policy or permission'}
+      if(curiosity) result.exploration=curiosity
       this.db.prepare("UPDATE jobs SET state='saved',result=? WHERE id=?").run(JSON.stringify(result),row.id)
       return {saved:true,job:row.id,title,bodyHash:digest(body),characters:body.length}
     })
@@ -136,7 +142,7 @@ export class GrowthStore {
     this.db.prepare('UPDATE jobs SET verified=1 WHERE id=?').run(row.id)
     return {job:row.id,title:result.title,bodyHash:digest(result.body),characters:result.body.length,
       excerpt:result.body.length<=1000?result.body:result.body.slice(0,650)+'\n[excerpt]\n'+result.body.slice(-350),
-      fullText:result.body.length<=1000}
+      fullText:result.body.length<=1000,...(result.exploration?{exploration:result.exploration}:{})}
   }
   finish(lease) {
     const row=this.owned(lease)

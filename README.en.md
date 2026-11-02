@@ -1,5 +1,7 @@
 # dsh-agent-growth
 
+Development branch: `explore` tasks (not yet in the v0.1.0 release) let the model retain up to three interests, record surprises and changed views, propose a small experiment, and decide `hold` or `candidate`. No video script is required. Submit sources with the previous exploration and real observation receipts using the existing task import format. Results add an `exploration` object; the save tool accepts it as a JSON string. Optional `search`/`inspect` requests are data only: an external adapter must enforce read-only actions, provenance, deduplication and limits, then supply receipts. This package never executes network requests or publishes content. Exploration shares the existing model budget and task lease, preserves history, and creates no new scheduler. See the Chinese README for the trial contract.
+
 [中文安装与使用说明](README.md) · [Releases](https://github.com/XiaoZheBrother/dsh-agent-growth/releases)
 
 Evidence-backed learning, content ideas, post-publication reflection and versioned memory for DeepSeek Harness. The configured model writes the actual observations; this plugin supplies sources, schedules work and checks persistence.

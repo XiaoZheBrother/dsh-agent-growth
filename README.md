@@ -103,11 +103,25 @@ dsh web --patch "C:/agent-growth/growth.patch.yml"
 }
 ```
 
-`kind` 支持 `learn`、`review`、`memory`；`due` 是 Unix 毫秒时间戳，`0` 表示立即可执行。`partial: true` 表示摘录，不能据此声称读过完整视频或原文。可选 `url` 保存来源链接。
+`kind` 支持 `learn`、`review`、`memory`，本开发分支还支持 `explore`（尚未包含在 v0.1.0 Release 中）；`due` 是 Unix 毫秒时间戳，`0` 表示立即可执行。`partial: true` 表示摘录，不能据此声称读过完整视频或原文。可选 `url` 保存来源链接。
 
 同一个 ID 的内容不可覆盖，修改素材需使用新的版本 ID。文件名使用英文字母、数字、点、下划线和连字符，以 `.json` 结尾；每个文件不超过 512000 字节。每轮最多处理 100 个有变化的文件，目录最多 1000 个 JSON 文件，超过时需自行归档已处理文件。导入失败后修改文件内容才会重新尝试。
 
 ## 接入 B站复盘
+
+### 开发分支：持续兴趣与探索试验
+
+源码安装后，可按相同任务格式提交 `kind: "explore"`。采集器把上一轮探索成果、实际观察回执和新素材放进 `sources`；插件不另建定时器，也不自动联网执行模型的请求。
+
+模型自行保留最多三个兴趣问题（稳定 `id`，状态为 `active/paused/resolved`），记录意外、看法变化、下一步小实验，以及 `hold/candidate` 分享判断。允许没有发现、暂不探索、不做视频。学习任务也不再强制生成文案。
+
+探索成果在原有 `body` 外新增 `exploration`：`interests`、`surprise`、`beliefChange`、`nextExperiment`、`share`、`request`。`growth_save` 的 `exploration` 参数为 JSON 字符串，格式由任务提示提供并在保存时校验。回读与召回会保留这个字段；所有旧结果不变。
+
+`request` 只能是 `null` 或 `{kind: "search" | "inspect", target: "搜索词或资料标识", reason: "疑问"}`。它是提案，不是执行权限。外部适配器必须自行限定只读工具、验证资料标识、限制次数、对请求去重，并把成功、失败或不确定的执行回执交给下一轮。未收到回执不能声称已经执行。通用插件不提供网络适配器；无需联网的人工实验也可把真实结果作为新来源输入。
+
+`explore` 每个执行日最多三次尝试（含失败与跨日积压），并与其他任务共用每日总预算、任务所有权和来源读取约束。新任务 ID 保留历史版本；持续兴趣依赖调用方传入前次成果。`candidate` 不会触发发布。此功能借鉴主动探索与反馈学习的设计，未复制或安装 dsh-dot、MaiBot、Voyager。
+
+### 投稿快照
 
 由现有采集器定期输出下面的 JSON 到收件目录；[完整示例](examples/bilibili-snapshot.json)使用虚构 BV 号和指标，请替换为真实观测：
 
