@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "type": "task",
+  "job": {
+    "id": "example-exploration-v1",
+    "kind": "explore",
+    "due": 0,
+    "instruction": "这是合成练习，不是真实浏览经历。自己挑一个值得进一步了解的问题，暂时没有发现也可以。保存探索记录后回读，不需要写视频稿。",
+    "sources": [{
+      "id": "example-exploration-observation-v1",
+      "asOf": "2026-01-01T00:00:00Z",
+      "partial": true,
+      "text": "合成场景：两个人讨论同一段科普。一人记住了一个奇怪的问题，另一人只记住结论。现有素材没有提供原视频、实验数据或两人的后续行为。你可以对记忆和好奇心之间的关系提出问题，但不能从这段练习推断真实观众的反应。"
+    }]
+  }
+}

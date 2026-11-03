@@ -8,7 +8,7 @@
 
 [English](README.en.md) · [下载安装包](https://github.com/XiaoZheBrother/dsh-agent-growth/releases) · [反馈问题](https://github.com/XiaoZheBrother/dsh-agent-growth/issues)
 
-**当前为 v0.1.0 实验版。** 自动模型调用默认关闭；不自动发布视频、发送评论、安装其他插件或修改人设。
+**当前为 v0.2.0 实验版。** 自动模型调用默认关闭；不自动发布视频、发送评论、安装其他插件或修改人设。
 
 ## 能做什么
 
@@ -31,10 +31,10 @@
 
 ## 安装
 
-从 [Releases](https://github.com/XiaoZheBrother/dsh-agent-growth/releases) 下载 `dsh-agent-growth-0.1.0.tgz`，用 **DSH 官方插件命令**安装。以下以 Windows PowerShell 为例，请替换实际文件路径：
+从 [Releases](https://github.com/XiaoZheBrother/dsh-agent-growth/releases) 下载 `dsh-agent-growth-0.2.0.tgz`，用 **DSH 官方插件命令**安装。以下以 Windows PowerShell 为例，请替换实际文件路径：
 
 ```powershell
-dsh plugin --profile web add "C:/Downloads/dsh-agent-growth-0.1.0.tgz"
+dsh plugin --profile web add "C:/Downloads/dsh-agent-growth-0.2.0.tgz"
 ```
 
 安装和启动时应使用同一个 `DSH_HOME`。本说明使用 `web` profile；如果你使用其他 profile，应保持安装和启动配置一致。重启 DSH 后，主对话可调用两个只读工具：
@@ -105,15 +105,15 @@ dsh web --patch "C:/agent-growth/growth.patch.yml"
 }
 ```
 
-`kind` 支持 `learn`、`review`、`memory`，本开发分支还支持 `explore`（尚未包含在 v0.1.0 Release 中）；`due` 是 Unix 毫秒时间戳，`0` 表示立即可执行。`partial: true` 表示摘录，不能据此声称读过完整视频或原文。可选 `url` 保存来源链接。
+`kind` 支持 `learn`、`review`、`memory`、`explore`；`due` 是 Unix 毫秒时间戳，`0` 表示立即可执行。`partial: true` 表示摘录，不能据此声称读过完整视频或原文。可选 `url` 保存来源链接。
 
 同一个 ID 的内容不可覆盖，修改素材需使用新的版本 ID。文件名使用英文字母、数字、点、下划线和连字符，以 `.json` 结尾；每个文件不超过 512000 字节。每轮最多处理 100 个有变化的文件，目录最多 1000 个 JSON 文件，超过时需自行归档已处理文件。导入失败后修改文件内容才会重新尝试。
 
 ## 接入 B站复盘
 
-### 开发分支：持续兴趣与探索试验
+### 持续兴趣与探索试验
 
-源码安装后，可按相同任务格式提交 `kind: "explore"`。采集器把上一轮探索成果、实际观察回执和新素材放进 `sources`；插件不另建定时器，也不自动联网执行模型的请求。
+安装 v0.2.0 后，可按相同任务格式提交 `kind: "explore"`。采集器把上一轮探索成果、实际观察回执和新素材放进 `sources`；插件不另建定时器，也不自动联网执行模型的请求。
 
 模型自行保留最多三个兴趣问题（稳定 `id`，状态为 `active/paused/resolved`），记录意外、看法变化、下一步小实验，以及 `hold/candidate` 分享判断。允许没有发现、暂不探索、不做视频。学习任务也不再强制生成文案。
 
@@ -123,7 +123,16 @@ dsh web --patch "C:/agent-growth/growth.patch.yml"
 
 `explore` 每个执行日最多三次尝试（含失败与跨日积压），并与其他任务共用每日总预算、任务所有权和来源读取约束。新任务 ID 保留历史版本；持续兴趣依赖调用方传入前次成果。`candidate` 不会触发发布。此功能借鉴主动探索与反馈学习的设计，未复制或安装 dsh-dot、MaiBot、Voyager。
 
+**先跑一轮：** 下载 [exploration.json](examples/exploration.json) 到已配置的收件目录。保持原配置的 `autoRun: true` 时，它会通过现有队列执行；不要再启动另一套执行器。在主对话调用 `agent_growth_status` 确认 `done`，再调用 `agent_growth_recall` 查看兴趣、`share` 和 `request`。示例是合成资料，不能当作真实经历。
+
+**继续下一轮：** 准备新的 `kind: "explore"` 任务及全新 ID。把上次召回的完整结果 JSON 作为一条 `sources[].text`，再加一条你实际取得的观察回执（例如资料摘录、执行时间、失败原因）。真实来源有截断时设置 `partial: true`。不要把请求本身写成成功回执。再次投递后，模型自行决定延续、暂停或改变兴趣；没新发现可以 `hold`。
+
+**从 v0.1.0 升级：** 等在途任务结束，停止同一实例的 DSH，备份完整 `dataDir`，用原 profile/DSH_HOME 执行 `dsh plugin --profile web add <v0.2.0安装包路径>`，再按原配置重启。不删除数据库，不重复导入新的副本，不同时运行两个使用同一角色的调度器。此版本不改表结构，保留旧结果。升级不要求重新登录 B站或重建 Soul 记忆。
+
+**角色口吻：** 在 `persona` 配置表达习惯即可，例如“日常说话直接自然，不默认列建议；正式记录仍按任务要求保存。保持公开 AI 身份，不虚构经历。”本插件不会覆盖你的角色卡或替你修改其他插件的提示词。
+
 ### 投稿快照
+
 
 由现有采集器定期输出下面的 JSON 到收件目录；[完整示例](examples/bilibili-snapshot.json)使用虚构 BV 号和指标，请替换为真实观测：
 
