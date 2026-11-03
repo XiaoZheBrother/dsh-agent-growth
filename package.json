@@ -1,7 +1,7 @@
 {
   "name": "dsh-agent-growth",
   "version": "0.1.0",
-  "description": "Evidence-backed learning, reflection and versioned memory for DeepSeek Harness",
+  "description": "大肥鱼成长插件：让 AI 从真实素材中学习、形成选题、复盘作品并积累可追溯记忆。适用于 DeepSeek Harness，可自定义角色。",
   "type": "module",
   "main": "index.js",
   "exports": {

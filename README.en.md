@@ -1,8 +1,8 @@
-# dsh-agent-growth
+# Big Fish Growth · dsh-agent-growth
 
 [中文安装与使用说明](README.md) · [Releases](https://github.com/XiaoZheBrother/dsh-agent-growth/releases)
 
-Evidence-backed learning, content ideas, post-publication reflection and versioned memory for DeepSeek Harness. The configured model writes the actual observations; this plugin supplies sources, schedules work and checks persistence.
+A growth plugin born from the “筱哲的大肥鱼” local AI-character pilot: learn from real material, develop content ideas, reflect on published work and retain traceable memories. Bring your own character; no particular persona or account is required. The configured model writes the observations; this plugin supplies sources, schedules work and checks persistence.
 
 **0.1.0 is an experimental local package.** Requires Node >=22.19 and DSH **0.2.1-rc.5**. Do not infer compatibility with other DSH releases. Automatic model calls are off by default. The plugin does not publish videos, send comments, install software, or alter persona files.
 
