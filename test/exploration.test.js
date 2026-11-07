@@ -6,6 +6,16 @@ import { join } from 'node:path'
 import { GrowthStore } from '../core.js'
 import { validateExploration } from '../exploration.js'
 const snapshot=()=>({interests:[{id:'question-1',question:'Why does this happen?',why:'I do not know yet.',status:'active'}],surprise:'None yet',beliefChange:'Unchanged',nextExperiment:'Compare examples',share:{decision:'hold',reason:'No evidence yet'},request:{kind:'search',target:'examples',reason:'Find a counterexample'}})
+test('ownership is retained without assuming endorsement; closure rejects contradictory requests',()=>{
+ const value=snapshot();value.interests[0].ownership={owner:'viewer',basis:'A viewer asked',personalReason:'Not interested myself'}
+ value.request=null;value.attention={decision:'end',reason:'Enough for now',revisitAt:null}
+ const saved=validateExploration(value)
+ assert.equal(saved.interests[0].ownership.owner,'viewer');assert.equal(saved.attention.decision,'end')
+ assert.throws(()=>validateExploration({...value,request:snapshot().request}))
+ assert.throws(()=>validateExploration({...value,attention:{decision:'wait',reason:'later',revisitAt:'tomorrow'}}))
+ assert.throws(()=>validateExploration({...value,attention:{decision:'end',reason:'done',revisitAt:'2026-11-08T12:00:00Z'}}))
+ assert.equal(validateExploration(snapshot()).attention,undefined)
+})
 test('exploration validates proposals without granting arbitrary actions',()=>{
   assert.equal(validateExploration(JSON.stringify(snapshot())).share.decision,'hold')
   for(const kind of ['shell','comment','install','publish']) assert.throws(()=>validateExploration({...snapshot(),request:{kind,target:'x',reason:'x'}}))
