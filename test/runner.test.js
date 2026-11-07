@@ -32,7 +32,7 @@ test('native tool schemas compile; worker guard denies unrelated tools; shutdown
     return {agent:{followup:()=>setTimeout(()=>controller.abort(),10),whenIdle:()=>new Promise(()=>{}),cancel:()=>{cancelled=true}},dispose:async()=>{disposed=true}}
   }}}
   const result=await runOne(ctx,store,'Test',controller.signal)
-  assert.equal(registered.length,4)
+  assert.equal(registered.length,7)
   for(const name of WORKER_TOOLS) assert.equal(guard({name}),undefined)
   for(const name of ['shell','bili_comment','agent_growth_status']) assert.equal(typeof guard({name}),'string')
   assert.equal(result.state,'failed');assert.ok(cancelled);assert.ok(disposed)
