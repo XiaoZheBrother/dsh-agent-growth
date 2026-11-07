@@ -10,7 +10,7 @@
 
 [English](README.en.md) · [下载安装包](https://github.com/XiaoZheBrother/dsh-agent-growth/releases) · [反馈问题](https://github.com/XiaoZheBrother/dsh-agent-growth/issues)
 
-**当前为 v0.2.0 实验版。** 自动模型调用默认关闭；不自动发布视频、发送评论、安装其他插件或修改人设。
+**当前为 v0.3.0 实验版。** 自动模型调用默认关闭；不自动发布视频、发送评论、安装其他插件或修改人设。
 
 ## 能做什么
 
@@ -33,10 +33,10 @@
 
 ## 安装
 
-从 [Releases](https://github.com/XiaoZheBrother/dsh-agent-growth/releases) 下载 `dsh-agent-growth-0.2.0.tgz`，用 **DSH 官方插件命令**安装。以下以 Windows PowerShell 为例，请替换实际文件路径：
+从 [Releases](https://github.com/XiaoZheBrother/dsh-agent-growth/releases) 下载 `dsh-agent-growth-0.3.0.tgz`，用 **DSH 官方插件命令**安装。以下以 Windows PowerShell 为例，请替换实际文件路径：
 
 ```powershell
-dsh plugin --profile web add "C:/Downloads/dsh-agent-growth-0.2.0.tgz"
+dsh plugin --profile web add "C:/Downloads/dsh-agent-growth-0.3.0.tgz"
 ```
 
 安装和启动时应使用同一个 `DSH_HOME`。本说明使用 `web` profile；如果你使用其他 profile，应保持安装和启动配置一致。重启 DSH 后，主对话可调用两个只读工具：
@@ -115,7 +115,7 @@ dsh web --patch "C:/agent-growth/growth.patch.yml"
 
 ### 持续兴趣与探索试验
 
-安装 v0.2.0 后，可按相同任务格式提交 `kind: "explore"`。采集器把上一轮探索成果、实际观察回执和新素材放进 `sources`；插件不另建定时器，也不自动联网执行模型的请求。
+安装 v0.3.0 后，可按相同任务格式提交 `kind: "explore"`。采集器把上一轮探索成果、实际观察回执和新素材放进 `sources`；插件不另建定时器，也不自动联网执行模型的请求。
 
 模型自行保留最多三个兴趣问题（稳定 `id`，状态为 `active/paused/resolved`），记录意外、看法变化、下一步小实验，以及 `hold/candidate` 分享判断。允许没有发现、暂不探索、不做视频。学习任务也不再强制生成文案。
 
@@ -129,7 +129,7 @@ dsh web --patch "C:/agent-growth/growth.patch.yml"
 
 **继续下一轮：** 准备新的 `kind: "explore"` 任务及全新 ID。把上次召回的完整结果 JSON 作为一条 `sources[].text`，再加一条你实际取得的观察回执（例如资料摘录、执行时间、失败原因）。真实来源有截断时设置 `partial: true`。不要把请求本身写成成功回执。再次投递后，模型自行决定延续、暂停或改变兴趣；没新发现可以 `hold`。
 
-**从 v0.1.0 升级：** 等在途任务结束，停止同一实例的 DSH，备份完整 `dataDir`，用原 profile/DSH_HOME 执行 `dsh plugin --profile web add <v0.2.0安装包路径>`，再按原配置重启。不删除数据库，不重复导入新的副本，不同时运行两个使用同一角色的调度器。此版本不改表结构，保留旧结果。升级不要求重新登录 B站或重建 Soul 记忆。
+**从 v0.1.0 升级：** 等在途任务结束，停止同一实例的 DSH，备份完整 `dataDir`，用原 profile/DSH_HOME 执行 `dsh plugin --profile web add <v0.3.0安装包路径>`，再按原配置重启。不删除数据库，不重复导入新的副本，不同时运行两个使用同一角色的调度器。此版本不改表结构，保留旧结果。升级不要求重新登录 B站或重建 Soul 记忆。
 
 **角色口吻：** 在 `persona` 配置表达习惯即可，例如“日常说话直接自然，不默认列建议；正式记录仍按任务要求保存。保持公开 AI 身份，不虚构经历。”本插件不会覆盖你的角色卡或替你修改其他插件的提示词。
 
@@ -221,10 +221,18 @@ CLI 不执行模型任务。DSH profile 内安装的包不一定把 `dsh-growth`
 [MIT](LICENSE)。项目基于 DSH 原生 API 独立实现，受到 dsh-bili-workbench 的素材事件流程、dsh-soul-md 的主题记忆及 DSH-Ling 的可审计修订思路启发；不打包这些插件，也不包含私人账号、记忆或凭据。
 
 
-## 0.3 开发预览：可复查经验
+## 可复查经验
 
 新增经验候选、适用范围、来源、采用结果、反例和修订历史。`agent_experience_propose` 保存假设，`agent_experience_recall` 读取状态，`agent_experience_revise` 修改或停用并保留原文。人工经验同样接受反例检验。
 
 可信适配器可通过 `dsh-agent-growth/experience` 的 `recordTrial` 写入结果证据；该接口不暴露给模型。结果必须晚于决策，工具辅助与模型决策分别归因。出现反例会标记争议；跨至少两次会话的三个独立决策反例会暂停该候选。复查任务进入原有 review 队列，受原有自动运行开关和预算控制，由角色决定保留、修改或停用。不会凭成功次数自动宣称真理。
 
-此功能已随 GitHub 主分支公开，仍为开发预览，尚未发布稳定版 Release。升级使用原 dataDir 即可保留旧队列和记忆；新增三张表，不删除旧表。游戏插件当前保留自己的证据数据库，尚未自动汇入这里。
+此功能包含在 v0.3.0 发行包中。升级使用原 dataDir 即可保留旧队列和记忆；新增三张表，不删除旧表。游戏插件当前保留自己的证据数据库，尚未自动汇入这里。
+
+## 目标归属、持续关注与自主收尾
+
+探索记录新增 `interests[].ownership`：目标提出者、判断依据及角色自己是否也在意；新增 `attention`：`continue/wait/end`、理由与可选复查时间。由角色决定，不设定说话模板。带归属的新格式必须包含收尾决定；旧记录无需迁移。
+
+通用成长插件负责校验和保存这些选择，不自行联网或启动额外循环。搭配 [B 站工作台 v0.3.0](https://github.com/XiaoZheBrother/dsh-bilibili-dafeiyu/releases/tag/v0.3.0)，现有探索调度会遵守等待与结束、识别新资料、保留原有额度及去重。其他采集器需要自行消费 attention；单独安装成长插件不等于所有外部调度自动支持收尾。
+
+设计参考 [Surfcore 目的机制](https://github.com/Mieksido/surfcore/blob/main/docs/guides/PURPOSE_OUTREACH.md)，未复制源码或运行其调度。历史记录只追加，不因结束兴趣而删除。
