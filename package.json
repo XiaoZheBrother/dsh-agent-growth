@@ -25,7 +25,9 @@
     "LICENSE",
     "examples",
     "README.en.md",
-    "experience.js"
+    "experience.js",
+    "docs/agent-guide.md",
+    "llms.txt"
   ],
   "engines": {
     "node": ">=22.19.0",
@@ -55,5 +57,16 @@
   "homepage": "https://github.com/XiaoZheBrother/dsh-agent-growth#readme",
   "bugs": {
     "url": "https://github.com/XiaoZheBrother/dsh-agent-growth/issues"
-  }
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "agent",
+    "bilibili",
+    "deepseek",
+    "memory",
+    "agent-memory",
+    "agent-learning",
+    "reflection"
+  ]
 }
